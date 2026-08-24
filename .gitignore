@@ -1,0 +1,31 @@
+# Virtual Environment
+.venv/
+venv/
+env/
+ENV/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Outputs and Generated Runs
+runs/
+screenshots/
+annotated_output/
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS Generated
+.DS_Store
+Thumbs.db
+
+# Ensure Model and Assets are Tracked
+!trained.pt
+!public/

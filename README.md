@@ -1,116 +1,175 @@
+<div align="center">
 
-# YOLO11m Model for Car Body Damage Detection
-YOLO11m-based car damage detector using deep learning, computer vision, and AI. This custom-trained model (trained.pt) was fine-tuned on a specialized dataset to detect and classify common vehicle body damage: dents, scratches, cracks, broken lamps, shattered glass, and flat tires. It’s high-capacity, fast-enough, and built for real-world inspection workflows. 
+# 🚗 CarVision: AI Vehicle Damage Inspection & Detection
 
----
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
+[![YOLO11m](https://img.shields.io/badge/Model-YOLO11m-orange.svg)](https://github.com/ultralytics/ultralytics)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-red.svg)](https://pytorch.org/)
+[![OpenCV](https://img.shields.io/badge/OpenCV-4.x-green.svg)](https://opencv.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+**An intelligent end-to-end Computer Vision system powered by custom fine-tuned YOLO11m for automated vehicle body damage inspection, real-time GUI detection, and batch video annotation.**
 
-## Model Overview
-
-- **Architecture:** YOLO11m (231 layers, ~20M parameters)
-- **Dataset:** CarDD_COCO (custom fine-tuned version)
-- **Classes:** dent, scratch, crack, shattered_glass, broken_lamp, flat_tire
-- **Training Framework:** Ultralytics 8.3.117, PyTorch 2.6.0+cu124, Python 3.11.12
-
----
-
-## Performance Snapshot
-
-Class-by-class tactical breakdown:
-
-| Class            | Box Precision (P) | Recall (R) | mAP50 | mAP50-95 |
-|:-----------------|:------------------|:-----------|:------|:---------|
-| shattered_glass  | 0.979              | 0.978      | 0.994 | 0.963    |
-| flat_tire        | 0.943              | 0.919      | 0.959 | 0.932    |
-| broken_lamp      | 0.826              | 0.821      | 0.895 | 0.796    |
-| dent             | 0.832              | 0.520      | 0.692 | 0.568    |
-| scratch          | 0.737              | 0.800      | 0.905 | 0.610    |
-| crack            | 0.699              | 0.586      | 0.620 | 0.424    |
+</div>
 
 ---
 
-## Tactical Highlights
-
-- **Shattered Glass:** Elite — nearly flawless across all metrics.  
-- **Flat Tire:** Excellent — reliable, highly precise detections.  
-- **Broken Lamp:** Very strong — high precision and consistency.  
-- **Dent/Scratch/Crack:** Weakest — fair performance, but prone to missed detections and slight localization drift (especially cracks).
-
----
-## Example Outputs
-
-Below are sample detection results from the model:
-![Example 2](https://raw.githubusercontent.com/ReverendBayes/vehicle_body_damage_detector/main/public/2.png)
-![Example 5](https://raw.githubusercontent.com/ReverendBayes/vehicle_body_damage_detector/main/public/5.png)
-![Example 6](https://raw.githubusercontent.com/ReverendBayes/vehicle_body_damage_detector/main/public/6.png)
-![Example 4](https://raw.githubusercontent.com/ReverendBayes/vehicle_body_damage_detector/main/public/4.png)
-![Example 7](https://raw.githubusercontent.com/ReverendBayes/vehicle_body_damage_detector/main/public/7.png)
-![Example 1](https://raw.githubusercontent.com/ReverendBayes/vehicle_body_damage_detector/main/public/1.png)
-![Example 3](https://raw.githubusercontent.com/ReverendBayes/vehicle_body_damage_detector/main/public/3.png)
----
-
-## Use Cases
-
-This model is fully usable for visual inspection support. It is intended as an assistive tool—not a replacement—for human service advisors. It aims to accelerate visual inspections, flag overlooked damage, and ensure consistency across high-throughput intake workflows. Use for inspection workflows, damage logging, or visual diagnostics.
-
-This model saves time, adds consistency, and helps document condition clearly before keys are handed over. It’s assistive—not autonomous. It gives advisors a head start.
-
-- Pre-loaner vehicle inspections
-- Service center damage logging
-- Fleet condition audits
-- Insurance pre-claim imaging
-- Rental return documentation
+## 📌 Table of Contents
+- [Overview](#-overview)
+- [Key Features](#-key-features)
+- [Detectable Damage Classes](#-detectable-damage-classes)
+- [Model Performance](#-model-performance)
+- [Project Structure](#-project-structure)
+- [Installation & Setup](#-installation--setup)
+- [Usage Guide](#-usage-guide)
+  - [1. Real-Time Interactive GUI](#1-real-time-interactive-gui-with-slider--auto-screenshot)
+  - [2. Image Damage Detection](#2-single--batch-image-damage-detection)
+  - [3. Full Video Annotation](#3-full-video-annotation-pipeline)
+  - [4. Direct Low-Latency Frame Seek](#4-low-latency-5th-frame-inference)
+  - [5. Jupyter Notebook](#5-jupyter-notebook)
+- [License](#-license)
 
 ---
 
-## Real-World Use: BMW Pre-Loaner Inspections
+## 🔍 Overview
 
-An enhanced version of this model was developed for BMW service environments to support pre-loaner and service drive vehicle inspections. 
-
-BMW car dealerships did not have a simple, automated, and high-quality way to document the pre-existing condition of vehicles that entered their care. If the condition of vehicles was not recorded, customer disputes would often occur in regard to pre-existing damages. This problem would hurt customer relationships and cost the business significant amounts of capital. 
-
-Here’s how it works:
-- Technicians or service drive cameras capture images of the vehicle exterior.
-- The model runs inference and flags visible body damage.
-- Detections are mapped to a standard car diagram automatically.
-- Human service advisors review and finalize the report. (It’s assistive—not autonomous. It gives advisors a head start.)
-
-This setup saves time, adds consistency, and helps document condition clearly before keys are handed over. 
-
-“Good enough” here means:  
-- Fewer missed issues  
-- Fewer false alarms  
-- Faster workflows  
-- Repeatable results across locations
+**CarVision** is designed to assist automotive service centers, insurance pre-claim imaging, rental car return auditing, and fleet condition inspections. The model automates the identification and classification of visible exterior vehicle damages to prevent disputes and accelerate intake workflows.
 
 ---
 
-## Model Files
+## ✨ Key Features
 
-- `trained.pt` — trained YOLO11m checkpoint 
+- 🎯 **Fine-Tuned YOLO11m:** ~20M parameters optimized for high-precision vehicle defect classification.
+- 🎛️ **Interactive Real-Time GUI:** Live OpenCV playback with an on-the-fly confidence score slider (0%–100%).
+- 📸 **Automated Periodic Logging:** Automatically captures and timestamps damage screenshots every 30 seconds into an isolated `screenshots/` directory.
+- 🎥 **HD Video Annotation:** Batch process and render fully annotated MP4 inspection videos with bounding boxes and confidence levels.
+- ⚡ **Zero-Latency Direct Seek:** Low-overhead frame extraction without CPU decoding bottlenecks.
+- 📦 **Modern Dependency Management:** Fast and isolated virtual environment setup using `uv`.
 
 ---
 
-## Quickstart
+## 🏷️ Detectable Damage Classes
 
-### 1. Install Ultralytics
+| Class | Description |
+| :--- | :--- |
+| **`dent`** | Body panel surface depression and sheet metal deformation |
+| **`scratch`** | Paint layer scratches, abrasions, and scuffs |
+| **`crack`** | Bumper, grill, or windshield fracture lines |
+| **`shattered_glass`** | Window, windshield, or sunroof breakage |
+| **`broken_lamp`** | Headlight, taillight, or turn indicator damage |
+| **`flat_tire`** | Deflated, punctured, or damaged wheel condition |
+
+---
+
+## 📊 Model Performance
+
+| Class | Box Precision (P) | Recall (R) | mAP50 | mAP50-95 |
+| :--- | :---: | :---: | :---: | :---: |
+| **shattered_glass** | **0.979** | **0.978** | **0.994** | **0.963** |
+| **flat_tire** | **0.943** | **0.919** | **0.959** | **0.932** |
+| **broken_lamp** | **0.826** | **0.821** | **0.895** | **0.796** |
+| **scratch** | **0.737** | **0.800** | **0.905** | **0.610** |
+| **dent** | **0.832** | **0.520** | **0.692** | **0.568** |
+| **crack** | **0.699** | **0.586** | **0.620** | **0.424** |
+
+---
+
+## 📂 Project Structure
+
+```text
+CarVision/
+├── trained.pt                   # Custom fine-tuned YOLO11m weights (~40MB)
+├── gui_detector.py              # Interactive GUI with live threshold slider & auto-screenshot
+├── create_annotated_video.py    # Full video annotation pipeline to MP4
+├── predict.py                   # Image prediction script
+├── video_inference.py           # Low-latency direct 5th frame inference
+├── stream_every_5th_frame.py    # Fast video stream frame skipping
+├── YOLO11m_trained.ipynb        # Jupyter Notebook for experiments & Colab
+├── requirements.txt             # Python dependencies
+├── public/                      # Sample inspection images
+├── screenshots/                 # Auto-saved inspection screenshots (gitignored)
+└── annotated_output/            # Exported annotated videos (gitignored)
+```
+
+---
+
+## 🚀 Installation & Setup
+
+### 1. Clone the Repository
 ```bash
-pip install ultralytics
+git clone git@github.com:Iamzain804/CarVision.git
+cd CarVision
 ```
 
-### 2. Load and Inference
-```python
-from ultralytics import YOLO
+### 2. Set Up Virtual Environment with `uv` (Recommended)
+```bash
+# Create virtual environment
+uv venv .venv
 
-model = YOLO("trained.pt")
-results = model("your_image.jpg", save=True)
-results[0].show()  # Visualize output
+# Activate environment (Windows)
+.\.venv\Scripts\activate
+
+# Activate environment (Linux / macOS)
+source .venv/bin/activate
+
+# Install dependencies
+uv pip install -r requirements.txt
+```
+
+*(Alternatively, using standard pip: `pip install -r requirements.txt`)*
+
+---
+
+## 💻 Usage Guide
+
+### 1. Real-Time Interactive GUI (with Slider & Auto-Screenshot)
+Opens an interactive window with live detection, a confidence slider, and auto-screenshot capture every 30 seconds:
+```bash
+python gui_detector.py
+```
+* **Slider:** Adjust confidence threshold in real-time.
+* **`S` key:** Instant manual screenshot.
+* **`Q` / `ESC`:** Exit.
+
+---
+
+### 2. Single / Batch Image Damage Detection
+Run inference on any vehicle photo:
+```bash
+# Test sample image
+python predict.py public/1.png
+
+# Test your custom image
+python predict.py "path/to/car_image.jpg"
 ```
 
 ---
 
-## References
-
-- [Ultralytics GitHub](https://github.com/ultralytics/ultralytics)
+### 3. Full Video Annotation Pipeline
+Process an entire inspection video and generate an annotated MP4 video with bounding boxes and labels:
+```bash
+python create_annotated_video.py
+```
+Output saved to: `annotated_output/annotated_car.mp4`
 
 ---
+
+### 4. Low-Latency 5th Frame Inference
+Extract and detect damage on the 5th frame without decoding preceding frames:
+```bash
+python video_inference.py
+```
+
+---
+
+### 5. Jupyter Notebook
+Launch the notebook for interactive step-by-step execution:
+```bash
+jupyter notebook YOLO11m_trained.ipynb
+```
+
+---
+
+## 📜 License
+
+This project is licensed under the [MIT License](LICENSE).
