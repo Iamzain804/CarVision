@@ -93,30 +93,47 @@ CarVision/
 
 ---
 
-## 🚀 Installation & Setup
+## 🚀 Installation & Environment Setup (using `uv`)
 
-### 1. Clone the Repository
+This project uses [**`uv`**](https://github.com/astral-sh/uv) (an extremely fast Python package manager) to create the isolated virtual environment (`.venv`) and install dependencies in seconds.
+
+### Step 1: Clone the Repository
 ```bash
 git clone git@github.com:Iamzain804/CarVision.git
 cd CarVision
 ```
 
-### 2. Set Up Virtual Environment with `uv` (Recommended)
+### Step 2: Install `uv` (if not already installed)
 ```bash
-# Create virtual environment
-uv venv .venv
+# Windows (PowerShell)
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 
-# Activate environment (Windows)
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+### Step 3: Create `.venv` Virtual Environment
+Create the dedicated virtual environment inside the project directory:
+```bash
+uv venv .venv
+```
+
+### Step 4: Activate the Virtual Environment
+```bash
+# On Windows (PowerShell / CMD)
 .\.venv\Scripts\activate
 
-# Activate environment (Linux / macOS)
+# On macOS / Linux
 source .venv/bin/activate
+```
 
-# Install dependencies
+### Step 5: Install Requirements with `uv`
+Install all dependencies (PyTorch, Ultralytics, OpenCV, etc.) at lightning speed:
+```bash
 uv pip install -r requirements.txt
 ```
 
-*(Alternatively, using standard pip: `pip install -r requirements.txt`)*
+> **Note:** Once activated, `(.venv)` will appear in your terminal prompt, indicating all scripts will run inside this isolated environment.
 
 ---
 
