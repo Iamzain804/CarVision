@@ -1,14 +1,15 @@
 <div align="center">
 
-# 🚗 CarVision: AI Vehicle Damage Inspection & Detection
+# 🚗 CarVision AI & FireGuard
+### Intelligent Vehicle Damage Inspection & Fire Hazard Segmentation System
 
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![YOLO11m](https://img.shields.io/badge/Model-YOLO11m-orange.svg)](https://github.com/ultralytics/ultralytics)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-red.svg)](https://pytorch.org/)
+[![YOLO11n-seg](https://img.shields.io/badge/Model-YOLO11n--seg-red.svg)](https://github.com/ultralytics/ultralytics)
 [![OpenCV](https://img.shields.io/badge/OpenCV-4.x-green.svg)](https://opencv.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.28%2B-FF4B4B.svg)](https://streamlit.io/)
 
-**An intelligent end-to-end Computer Vision system powered by custom fine-tuned YOLO11m for automated vehicle body damage inspection, real-time GUI detection, and batch video annotation.**
+**An end-to-end, unified Computer Vision platform combining high-precision exterior vehicle defect detection with real-time fire and hazard instance segmentation.**
 
 </div>
 
@@ -16,177 +17,204 @@
 
 ## 📌 Table of Contents
 - [Overview](#-overview)
+- [Project Architecture](#-project-architecture)
 - [Key Features](#-key-features)
 - [Detectable Damage Classes](#-detectable-damage-classes)
-- [Model Performance](#-model-performance)
-- [Project Structure](#-project-structure)
-- [Installation & Setup](#-installation--setup)
-- [Usage Guide](#-usage-guide)
-  - [1. Real-Time Interactive GUI](#1-real-time-interactive-gui-with-slider--auto-screenshot)
-  - [2. Image Damage Detection](#2-single--batch-image-damage-detection)
-  - [3. Full Video Annotation](#3-full-video-annotation-pipeline)
-  - [4. Direct Low-Latency Frame Seek](#4-low-latency-5th-frame-inference)
-  - [5. Jupyter Notebook](#5-jupyter-notebook)
-- [License](#-license)
+- [Installation & Quickstart](#-installation--quickstart)
+- [Running the Project](#-running-the-project)
+  - [1. Interactive Master Launcher](#1-interactive-master-launcher-easiest)
+  - [2. Real-Time Video Stream with Slider & Auto-Screenshot](#2-real-time-video-stream-with-slider--auto-screenshot)
+  - [3. Single or Batch Image Inspection (Neon Polygon Contours)](#3-single-or-batch-image-inspection-neon-polygon-contours)
+  - [4. Fire & Smoke Hazard Segmentation](#4-fire--smoke-hazard-segmentation)
+  - [5. Full Video MP4 Annotation & Export](#5-full-video-mp4-annotation--export)
+  - [6. Modern Streamlit Web Dashboard](#6-modern-streamlit-web-dashboard)
+  - [7. Desktop App (Tkinter Image Browser)](#7-desktop-app-tkinter-image-browser)
+- [CLI Reference](#-cli-reference)
 
 ---
 
 ## 🔍 Overview
 
-**CarVision** is designed to assist automotive service centers, insurance pre-claim imaging, rental car return auditing, and fleet condition inspections. The model automates the identification and classification of visible exterior vehicle damages to prevent disputes and accelerate intake workflows.
+**CarVision AI & FireGuard** solves the challenge of automated vehicle intake, insurance claims appraisal, fleet return auditing, and accident hazard assessment:
+1. **Vehicle Damage Detection:** Powered by fine-tuned **YOLO11m** (~20M parameters), identifying sheet metal deformities, scratches, cracks, broken lamps, shattered glass, and flat tires.
+2. **Neon Polygon Contours:** Picture-perfect defect boundary extraction using edge detection and semi-transparent alpha overlays.
+3. **Hazard & Fire Segmentation:** Powered by fine-tuned **YOLO11n-seg** for instant fire hazard detection with pixel-level instance masks.
+4. **Unified Multi-Interface Support:** Run via Console Menu, CLI, OpenCV Live GUI, Desktop App, or Web Browser.
+
+---
+
+## 📁 Project Architecture
+
+```text
+d:\car demage\
+│
+├── models/                           # 🧠 Centralized AI model weights
+│   ├── car_damage_yolo11m.pt        # 40.5 MB fine-tuned YOLO11m vehicle damage model
+│   ├── fire_seg_yolo11n.pt          # 6.0 MB fine-tuned YOLO11n fire segmentation model
+│   └── mobile_model.h5              # 105.7 MB vehicle classification weights
+│
+├── data/                             # 📥 Input media & test assets
+│   ├── images/                      # Sample vehicle & fire images
+│   ├── videos/                      # Sample inspection videos (car.mp4, etc.)
+│   └── public/                      # Sample reference assets
+│
+├── src/                              # ⚙️ Reusable core AI package
+│   ├── __init__.py                  # High-level package exports
+│   ├── config.py                    # Central paths, thresholds, classes, neon colors
+│   ├── damage_detector.py           # CarDamageDetector class (YOLO11m)
+│   ├── fire_segmenter.py            # FireSegmenter class (YOLO11n-seg)
+│   ├── video_pipeline.py            # Hardware frame seek, auto-screenshot, batch video export
+│   └── utils/
+│       ├── __init__.py
+│       ├── visualizer.py            # Neon polygon contours, bounding boxes, telemetry HUD
+│       └── media_loader.py          # Intelligent path resolution and media I/O
+│
+├── apps/                             # 🖥️ User interfaces & entry points
+│   ├── __init__.py
+│   ├── cli.py                       # Unified Command Line Interface
+│   ├── live_gui.py                  # Realtime OpenCV GUI with dynamic trackbar slider
+│   ├── desktop_app.py               # Tkinter desktop folder/image damage inspector
+│   └── web_dashboard.py             # Streamlit interactive web application
+│
+├── outputs/                          # 📤 Centralized export directory
+│   ├── images/                      # Annotated result images
+│   ├── videos/                      # Rendered annotated MP4 videos
+│   └── screenshots/                 # Auto & manual captured inspection screenshots
+│
+├── notebooks/                        # 📓 Research and training notebooks
+│   ├── YOLO11m_trained.ipynb
+│   ├── YOLOv8_training.ipynb
+│   └── Faster_RCNN.ipynb
+│
+├── run.py                            # 🚀 Master runner (Interactive Console Menu + CLI)
+├── requirements.txt                  # 📦 Clean Python dependencies
+└── README.md                         # 📖 Complete project guide
+```
 
 ---
 
 ## ✨ Key Features
 
-- 🎯 **Fine-Tuned YOLO11m:** ~20M parameters optimized for high-precision vehicle defect classification.
-- 🎛️ **Interactive Real-Time GUI:** Live OpenCV playback with an on-the-fly confidence score slider (0%–100%).
-- 📸 **Automated Periodic Logging:** Automatically captures and timestamps damage screenshots every 30 seconds into an isolated `screenshots/` directory.
-- 🎥 **HD Video Annotation:** Batch process and render fully annotated MP4 inspection videos with bounding boxes and confidence levels.
-- ⚡ **Zero-Latency Direct Seek:** Low-overhead frame extraction without CPU decoding bottlenecks.
-- 📦 **Modern Dependency Management:** Fast and isolated virtual environment setup using `uv`.
+- 🎯 **Dual AI Models:** YOLO11m for damage detection + YOLO11n for fire segmentation.
+- 🎛️ **Live Trackbar Slider:** Adjust detection confidence threshold on the fly during video playback.
+- ⚡ **Zero-Latency Direct Seek:** Hardware-level 5th-frame seeking eliminates CPU decoding overhead.
+- 📸 **Periodic Auto-Screenshot:** Automatically captures and timestamps damage detections every 30s into `outputs/screenshots/`.
+- 🌐 **Modern Web Dashboard:** Drag-and-drop web UI powered by Streamlit with side-by-side inspection views.
 
 ---
 
 ## 🏷️ Detectable Damage Classes
 
-| Class | Description |
-| :--- | :--- |
-| **`dent`** | Body panel surface depression and sheet metal deformation |
-| **`scratch`** | Paint layer scratches, abrasions, and scuffs |
-| **`crack`** | Bumper, grill, or windshield fracture lines |
-| **`shattered_glass`** | Window, windshield, or sunroof breakage |
-| **`broken_lamp`** | Headlight, taillight, or turn indicator damage |
-| **`flat_tire`** | Deflated, punctured, or damaged wheel condition |
+| Class | Color | Description |
+| :--- | :--- | :--- |
+| **`dent`** | Bright Yellow | Sheet metal surface depressions and panel impact |
+| **`scratch`** | Neon Green | Paint layer scratches, scuffs, and abrasions |
+| **`crack`** | Neon Purple | Bumper, fender, or body panel fracture lines |
+| **`broken_lamp`** | Sky Blue / Cyan | Damaged headlights, taillights, or indicators |
+| **`shattered_glass`**| Vibrant Orange | Broken windshield, side windows, or sunroof |
+| **`flat_tire`** | Pinkish Red | Deflated, punctured, or damaged wheels |
 
 ---
 
-## 📊 Model Performance
+## 🚀 Installation & Quickstart
 
-| Class | Box Precision (P) | Recall (R) | mAP50 | mAP50-95 |
-| :--- | :---: | :---: | :---: | :---: |
-| **shattered_glass** | **0.979** | **0.978** | **0.994** | **0.963** |
-| **flat_tire** | **0.943** | **0.919** | **0.959** | **0.932** |
-| **broken_lamp** | **0.826** | **0.821** | **0.895** | **0.796** |
-| **scratch** | **0.737** | **0.800** | **0.905** | **0.610** |
-| **dent** | **0.832** | **0.520** | **0.692** | **0.568** |
-| **crack** | **0.699** | **0.586** | **0.620** | **0.424** |
+```bash
+# 1. Clone or navigate to the project directory
+cd "d:\car demage"
+
+# 2. Install dependencies
+pip install -r requirements.txt
+```
 
 ---
 
-## 📂 Project Structure
+## 🎮 Running the Project
 
+### 1. Interactive Master Launcher (Easiest)
+Aap simple command run karein:
+```bash
+python run.py
+```
+Yeh command chalate hi console mein interactive menu khul jayega:
 ```text
-CarVision/
-├── trained.pt                   # Custom fine-tuned YOLO11m weights (~40MB)
-├── gui_detector.py              # Interactive GUI with live threshold slider & auto-screenshot
-├── create_annotated_video.py    # Full video annotation pipeline to MP4
-├── predict.py                   # Image prediction script
-├── video_inference.py           # Low-latency direct 5th frame inference
-├── stream_every_5th_frame.py    # Fast video stream frame skipping
-├── YOLO11m_trained.ipynb        # Jupyter Notebook for experiments & Colab
-├── requirements.txt             # Python dependencies
-├── public/                      # Sample inspection images
-├── screenshots/                 # Auto-saved inspection screenshots (gitignored)
-└── annotated_output/            # Exported annotated videos (gitignored)
+============================================================
+🚗  CarVision AI: Vehicle Damage & Hazard Inspection System
+============================================================
+ [1] Real-Time Video Damage Inspection (Live GUI + Slider)
+ [2] Image Damage Inspection (Neon Polygon Contours)
+ [3] Fire & Smoke Hazard Instance Segmentation
+ [4] Full Video Batch Annotation (Export MP4)
+ [5] Launch Web Dashboard (Streamlit UI in Browser)
+ [6] Launch Desktop App (Tkinter Image Browser)
+ [0] Exit
+============================================================
 ```
 
 ---
 
-## 🚀 Installation & Environment Setup (using `uv`)
-
-This project uses [**`uv`**](https://github.com/astral-sh/uv) (an extremely fast Python package manager) to create the isolated virtual environment (`.venv`) and install dependencies in seconds.
-
-### Step 1: Clone the Repository
+### 2. Real-Time Video Stream with Slider & Auto-Screenshot
+Video par live damage detection chalayein:
 ```bash
-git clone git@github.com:Iamzain804/CarVision.git
-cd CarVision
+python run.py --mode damage-video --source data/videos/car.mp4
 ```
-
-### Step 2: Install `uv` (if not already installed)
-```bash
-# Windows (PowerShell)
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-
-# macOS / Linux
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
-
-### Step 3: Create `.venv` Virtual Environment
-Create the dedicated virtual environment inside the project directory:
-```bash
-uv venv .venv
-```
-
-### Step 4: Activate the Virtual Environment
-```bash
-# On Windows (PowerShell / CMD)
-.\.venv\Scripts\activate
-
-# On macOS / Linux
-source .venv/bin/activate
-```
-
-### Step 5: Install Requirements with `uv`
-Install all dependencies (PyTorch, Ultralytics, OpenCV, etc.) at lightning speed:
-```bash
-uv pip install -r requirements.txt
-```
-
-> **Note:** Once activated, `(.venv)` will appear in your terminal prompt, indicating all scripts will run inside this isolated environment.
+**Controls:**
+- **Slider:** Drag slider to change Confidence Threshold (0% to 100%).
+- **S key:** Manual instant screenshot lena.
+- **Q / ESC key:** Window close karna.
 
 ---
 
-## 💻 Usage Guide
-
-### 1. Real-Time Interactive GUI (with Slider & Auto-Screenshot)
-Opens an interactive window with live detection, a confidence slider, and auto-screenshot capture every 30 seconds:
+### 3. Single or Batch Image Inspection (Neon Polygon Contours)
+Kisi bhi image par damage detect karein:
 ```bash
-python gui_detector.py
+python run.py --mode damage-image --source data/images/download_1.jpg
 ```
-* **Slider:** Adjust confidence threshold in real-time.
-* **`S` key:** Instant manual screenshot.
-* **`Q` / `ESC`:** Exit.
+*Output image automatically `outputs/images/` mein save ho jayegi.*
 
 ---
 
-### 2. Single / Batch Image Damage Detection
-Run inference on any vehicle photo:
+### 4. Fire & Smoke Hazard Segmentation
+Fire hazard segmentation chalayein:
 ```bash
-# Test sample image
-python predict.py public/1.png
-
-# Test your custom image
-python predict.py "path/to/car_image.jpg"
+python run.py --mode fire-image --source data/images/download_2.jpg
 ```
 
 ---
 
-### 3. Full Video Annotation Pipeline
-Process an entire inspection video and generate an annotated MP4 video with bounding boxes and labels:
+### 5. Full Video MP4 Annotation & Export
+Puri video ko process karke annotated MP4 save karein:
 ```bash
-python create_annotated_video.py
+python run.py --mode annotate-video --source data/videos/car.mp4
 ```
-Output saved to: `annotated_output/annotated_car.mp4`
+*Rendered video `outputs/videos/car_annotated.mp4` mein save hogi.*
 
 ---
 
-### 4. Low-Latency 5th Frame Inference
-Extract and detect damage on the 5th frame without decoding preceding frames:
+### 6. Modern Streamlit Web Dashboard
+Browser mein drag-and-drop web dashboard chalane ke liye:
 ```bash
-python video_inference.py
+streamlit run apps/web_dashboard.py
+```
+Ya menu se option `[5]` select karein. Browser automatically `http://localhost:8501` par open ho jayega.
+
+---
+
+### 7. Desktop App (Tkinter Image Browser)
+Standalone desktop GUI chalane ke liye:
+```bash
+python apps/desktop_app.py
 ```
 
 ---
 
-### 5. Jupyter Notebook
-Launch the notebook for interactive step-by-step execution:
-```bash
-jupyter notebook YOLO11m_trained.ipynb
-```
+## 🛠️ CLI Reference
 
----
-
-## 📜 License
-
-This project is licensed under the [MIT License](LICENSE).
+| Flag | Description | Example |
+| :--- | :--- | :--- |
+| `--mode` | `damage-video`, `damage-image`, `fire-image`, `annotate-video` | `--mode damage-image` |
+| `--source` | Image/Video path ya camera index `0` | `--source data/videos/car.mp4` |
+| `--conf` | Confidence threshold float (0.05 to 1.0) | `--conf 0.35` |
+| `--polygon` | Precise neon polygon contours toggle (default: True) | `--polygon` |
+| `--bbox-only`| Only show bounding boxes | `--bbox-only` |
+| `--step` | Video frame skip seek step (default: 5) | `--step 5` |
+| `--no-show` | Headless mode (bina GUI window ke process karna) | `--no-show` |

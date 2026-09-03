@@ -1,7 +1,11 @@
-ultralytics>=8.3.0
-torch
-torchvision
-opencv-python
-pillow
-matplotlib
-ipykernel
+# Core Computer Vision & Deep Learning
+torch>=2.0.0
+torchvision>=0.15.0
+ultralytics>=8.0.0
+opencv-python>=4.8.0
+numpy>=1.23.0
+pillow>=9.5.0
+
+# User Interfaces & Web Dashboard
+streamlit>=1.25.0
+# tkinter is built into standard Python on Windows

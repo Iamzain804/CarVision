@@ -1,31 +1,44 @@
-# Virtual Environment
-.venv/
-venv/
-env/
-ENV/
-
-# Python Cache
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
-.Python
 
-# Outputs and Generated Runs
-runs/
-screenshots/
-annotated_output/
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
 
-# IDE & Editor files
+# IDE & OS files
 .vscode/
 .idea/
 *.swp
 *.swo
-
-# OS Generated
 .DS_Store
 Thumbs.db
 
-# Ensure Model and Assets are Tracked
-!trained.pt
-!public/
+# YOLO runs & training logs
+runs/
+*.cache
+
+# Models to exclude (as requested: do not push .h5)
+*.h5
+models/*.h5
+mobile_model.h5
+
+# Sub-repositories / Legacy folders
+Car-damage-detection/
+YOLO11m-Car-Damage-Detector/
+fire-segmentation-yolo11n/
+
+# Loose root media copies (organized under data/)
+car.mp4
+WhatsApp*
+download*.jpg
+example_output.jpg
+training_curves.png
+
+# Output media artifacts (keep folders with .gitkeep)
+outputs/videos/*.mp4
+outputs/screenshots/*.jpg
